@@ -9,26 +9,26 @@ const signInUser = catchAsync(async (req, res, next) => {
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Auth registered successfully",
+        message: "User registered successfully",
         data: result
     })
 });
 const logInUser = catchAsync(async (req, res, next) => {
-    const { accessToken, refreshToken } = await AuthServices.loginUserIntoDB(req.body);
+    const { accessToken, refreshToken, result } = await AuthServices.loginUserIntoDB(req.body);
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: config.node_env === "production"
     });
 
-    sendResponse(res, {
+    res.json({
         success: true,
         statusCode: httpStatus.OK,
-        message: "Auth registered successfully",
-        data: {
-            accessToken
-        }
+        message: "User logged in successfully",
+        token: accessToken,
+        data: result
     })
+
 });
 
 export const authController = {
