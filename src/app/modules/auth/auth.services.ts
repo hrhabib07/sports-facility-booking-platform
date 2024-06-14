@@ -5,7 +5,6 @@ import { TUserLogin, TUserSignIn } from "./auth.interface";
 import jwt from "jsonwebtoken";
 import { isPasswordMatch } from "./auth.utils";
 import config from "../../config";
-import { emitWarning } from "process";
 
 const signInUserIntoDB = async (payload: TUserSignIn) => {
     // check if user Exist 
@@ -34,9 +33,13 @@ const loginUserIntoDB = async (payload: TUserLogin) => {
         role: existingUser.role
     }
     // crate jwt token 
-    const accessToke = jwt.sign(jwtPayload, config.jwt_secret as string, { expiresIn: config.jwt_access_expires_in });
-    const refreshToke = jwt.sign(jwtPayload, config.jwt_secret as string, { expiresIn: config.jwt_access_expires_in });
+    const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, { expiresIn: config.jwt_access_expires_in });
+    const refreshToken = jwt.sign(jwtPayload, config.jwt_refresh_secret as string, { expiresIn: config.jwt_refresh_expires_in });
 
+    return {
+        accessToken,
+        refreshToken
+    }
 
 };
 
