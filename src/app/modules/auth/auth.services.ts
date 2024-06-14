@@ -5,6 +5,7 @@ import { TUserLogin, TUserSignIn } from "./auth.interface";
 import jwt from "jsonwebtoken";
 import { isPasswordMatch } from "./auth.utils";
 import config from "../../config";
+import { emitWarning } from "process";
 
 const signInUserIntoDB = async (payload: TUserSignIn) => {
     // check if user Exist 
@@ -26,11 +27,17 @@ const loginUserIntoDB = async (payload: TUserLogin) => {
     const isMatched = await isPasswordMatch(payload.password, existingUser.password);
     if (!isMatched) {
         throw new AppError(httpStatus.BAD_REQUEST, "invalid password")
+    };
+
+    const jwtPayload = {
+        email: existingUser.email,
+        role: existingUser.role
     }
     // crate jwt token 
-    jwt.sign({
-        data: payload,
-    }, config.jwt_secret as string, { expiresIn: "10d" });
+    const accessToke = jwt.sign(jwtPayload, config.jwt_secret as string, { expiresIn: config.jwt_access_expires_in });
+    const refreshToke = jwt.sign(jwtPayload, config.jwt_secret as string, { expiresIn: config.jwt_access_expires_in });
+
+
 };
 
 export const AuthServices = {
