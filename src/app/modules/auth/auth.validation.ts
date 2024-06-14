@@ -3,19 +3,23 @@ import { User_Role } from "../users/userConstant";
 
 // Zod schema for TUserSignIn
 const userSignInSchema = z.object({
-    name: z.string(),
-    email: z.string().email(),
-    password: z.string(),
-    phone: z.string(),
-    role: z.nativeEnum(User_Role),
-    address: z.string(),
-    passwordChangedAd: z.date().optional(),
+    body: z.object({
+        name: z.string(),
+        email: z.string().email(),
+        password: z.string(),
+        phone: z.string(),
+        role: z.nativeEnum(User_Role),
+        address: z.string(),
+        passwordChangedAd: z.date().optional(),
+    })
 });
 
 // Zod schema for TUserLogin
 const userLoginSchema = z.object({
-    email: z.string().email(),
-    password: z.string(),
+    body: z.object({
+        email: z.string().email(),
+        password: z.string(),
+    })
 });
 
 export const AuthValidation = {
