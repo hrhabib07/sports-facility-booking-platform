@@ -57,12 +57,19 @@ const getAllBookingsFromDB = async () => {
   const result = await Booking.find().populate("user").populate("facility");
   return result;
 };
+
 const getUserBookingsFromDB = async (id: Types.ObjectId) => {
+
   const result = await Booking.find({ user: id })
     .populate("user")
     .populate("facility");
+
+  // // Filter out bookings where isBooked is 'canceled'
+  // const activeBookings = result.filter(booking => booking.isBooked !== 'canceled');
+
   return result;
 };
+
 const deleteUserBookingsFromDB = async (
   bookingId: string,
   userId: Types.ObjectId,
