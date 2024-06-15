@@ -21,17 +21,17 @@ export const auth = (...requiredRoles: (keyof typeof User_Role)[]) => {
         const tokenWithBearer = req.headers.authorization;
         const accessToken = tokenWithBearer?.split(" ")[1];
         if (!accessToken) {
-            throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized")
+            throw new AppError(httpStatus.BAD_REQUEST, "Authorization token not provided")
         }
         const decodedToken: JwtPayload = jwt.verify(accessToken as string, config.jwt_access_secret as string) as JwtPayload;
         const { role, email } = decodedToken;
         const verifiedUser = await User.findOne({ email });
 
         if (!verifiedUser) {
-            throw new AppError(httpStatus.BAD_REQUEST, "User does not exist")
+            throw new AppError(httpStatus.BAD_REQUEST, "User does not found")
         }
         if (!requiredRoles.includes(role)) {
-            throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized")
+            throw new AppError(httpStatus.BAD_REQUEST, "You have no access to this route")
         }
 
         next();

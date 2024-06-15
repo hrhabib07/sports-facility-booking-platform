@@ -17,9 +17,8 @@ const crateBookingIntoDB = async (payload: TBooking, userId: Types.ObjectId | un
     }
     const { startTime, endTime } = payload;
     const difference: number = Number(endTime.split(':')[0]) - Number(startTime.split(':')[0]);
-
+    payload.isBooked ? payload.isBooked : payload.isBooked = isBooked.confirmed;;
     payload.payableAmount = difference * 20;
-    payload.isBooked = isBooked.confirmed;
     payload.user = userId;
 
     const result = await Booking.create(payload);
@@ -39,7 +38,7 @@ const getAvailableSlotsFromDB = async (date: string) => {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid date format. Use YYYY-MM-DD.');
     };
 
-    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed || isBooked.canceled }).select("startTime endTime -_id");
+    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed }).select("startTime endTime -_id");
 
     return result;
 };
