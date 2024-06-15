@@ -8,6 +8,15 @@ import jwt from "jsonwebtoken"
 import { ObjectId, Types } from "mongoose";
 
 const crateBookingIntoDB = async (payload: TBooking, userId: Types.ObjectId | undefined) => {
+    const isBookingExist = await Booking.findOne({
+        date: payload.date,
+        startTime: payload.startTime,
+        endTime: payload.endTime,
+        isBooked: isBooked.confirmed,
+    });
+    if (isBookingExist) {
+        throw new AppError(httpStatus.BAD_REQUEST, "This time slot is booked")
+    }
     const { startTime, endTime } = payload;
     const difference: number = Number(endTime.split(':')[0]) - Number(startTime.split(':')[0]);
 
@@ -37,7 +46,21 @@ const getAvailableSlotsFromDB = async (date: string) => {
     return result;
 };
 
+const getAllBookingsFromDB = async () => {
+
+    const result = await Booking.find().populate("user");
+    return result
+
+
+}
+const getUserBookingsFromDB = async (id: Types.ObjectId) => {
+    const result = await Booking.find({ user: id });
+    return result
+}
+
 export const BookingServices = {
     crateBookingIntoDB,
-    getAvailableSlotsFromDB
+    getAvailableSlotsFromDB,
+    getAllBookingsFromDB,
+    getUserBookingsFromDB
 }

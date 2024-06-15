@@ -7,16 +7,12 @@ import jwt from "jsonwebtoken";
 import { User } from "../users/user.model";
 import config from "../../config";
 import { TUser } from "../users/user.interface";
+import { getUserId } from "../../utils/getUserId";
+import { Types } from "mongoose";
 
 const createdBooking = catchAsync(async (req, res, next) => {
 
-    const tokenWithBearer = req.headers.authorization;
-    const accessToken = tokenWithBearer?.split(" ")[1];
-    const decodedToken: JwtPayload = jwt.verify(accessToken as string, config.jwt_access_secret as string) as JwtPayload;
-    const { role, email } = decodedToken;
-    const verifiedUser: TUser | null = await User.findOne({ email });
-
-    const userId = verifiedUser?._id;
+    const userId = await getUserId(req.headers.authorization as string);
 
     const result = await BookingServices.crateBookingIntoDB(req.body, userId);
     sendResponse(res, {
@@ -38,8 +34,30 @@ const getAvailableSlots = catchAsync(async (req, res, next) => {
     })
 });
 
+const getAllBookings = catchAsync(async (req, res, next) => {
+    const result = await BookingServices.getAllBookingsFromDB();
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Bookings retrieved successfully",
+        data: result
+    })
+});
+const getUsersBookings = catchAsync(async (req, res, next) => {
+    const userId = await getUserId(req.headers.authorization as string);
+    const result = await BookingServices.getUserBookingsFromDB(userId as Types.ObjectId);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Bookings retrieved successfully",
+        data: result
+    })
+});
+
 
 export const BookingController = {
     createdBooking,
-    getAvailableSlots
+    getAvailableSlots,
+    getAllBookings,
+    getUsersBookings
 }
