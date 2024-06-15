@@ -9,4 +9,6 @@ const facilitySchema = new Schema<TFacility>({
     isDeleted: { type: Boolean, default: false },
 });
 
+
+
 export const Facility = model<TFacility>("Facility", facilitySchema);
