@@ -19,7 +19,7 @@ const crateBookingIntoDB = async (payload: TBooking, userId: Types.ObjectId | un
     return result;
 };
 
-const getAllBookingFromDB = async (date: string) => {
+const getAvailableSlotsFromDB = async (date: string) => {
     // If date is not provided, use today's date in YYYY-MM-DD format
     const currentDate = new Date();
     const formattedCurrentDate = currentDate.toISOString().split('T')[0];
@@ -32,25 +32,12 @@ const getAllBookingFromDB = async (date: string) => {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid date format. Use YYYY-MM-DD.');
     };
 
-    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed })
-        .populate('user')
-        .populate('facility');
+    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed }).select("startTime endTime -_id");
 
     return result;
 };
 
 export const BookingServices = {
     crateBookingIntoDB,
-    getAllBookingFromDB
+    getAvailableSlotsFromDB
 }
-
-
-
-
-
-// const getAllBooking = async (query: Record<string, unknown>) => {
-//     const bookingQuery = new QueryBuilder(Booking.find().populate("user").populate("facility"), query).search(bookingSearchableField).filter().sort().paginate().fields();
-//     const result = await bookingQuery.modelQuery;
-//     return result;
-// };
-

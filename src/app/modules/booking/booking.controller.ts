@@ -27,9 +27,9 @@ const createdBooking = catchAsync(async (req, res, next) => {
     })
 });
 
-const getAllBooking = catchAsync(async (req, res, next) => {
+const getAvailableSlots = catchAsync(async (req, res, next) => {
     const date = req.query.date as string;
-    const result = await BookingServices.getAllBookingFromDB(date);
+    const result = await BookingServices.getAvailableSlotsFromDB(date);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -41,5 +41,5 @@ const getAllBooking = catchAsync(async (req, res, next) => {
 
 export const BookingController = {
     createdBooking,
-    getAllBooking
+    getAvailableSlots
 }
