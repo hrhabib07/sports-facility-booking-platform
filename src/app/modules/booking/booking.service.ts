@@ -1,11 +1,19 @@
 import httpStatus from "http-status";
-import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/appError";
-import { bookingSearchableField } from "./booking.constant";
+import { isBooked } from "./booking.constant";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
+import { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
+import { ObjectId, Types } from "mongoose";
 
-const crateBookingIntoDB = async (payload: TBooking) => {
+const crateBookingIntoDB = async (payload: TBooking, userId: Types.ObjectId | undefined) => {
+    const { startTime, endTime } = payload;
+    const difference: number = Number(endTime.split(':')[0]) - Number(startTime.split(':')[0]);
+
+    payload.payableAmount = difference * 20;
+    payload.isBooked = isBooked.confirmed;
+    payload.user = userId;
 
     const result = await Booking.create(payload);
     return result;
@@ -23,8 +31,8 @@ const getAllBookingFromDB = async (date: string) => {
     if (date && !datePattern.test(date)) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid date format. Use YYYY-MM-DD.');
     };
-    console.log(parsedDate);
-    const result = await Booking.find({ date: parsedDate })
+
+    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed })
         .populate('user')
         .populate('facility');
 
