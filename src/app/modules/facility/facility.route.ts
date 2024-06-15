@@ -9,5 +9,6 @@ const router = Router();
 router.post("/", validateRequest(FacilityValidations.createFacilityValidationSchema), auth(User_Role.admin), FacilityController.crateFacility);
 router.put("/:id", validateRequest(FacilityValidations.updateFacilityValidationSchema), auth(User_Role.admin), FacilityController.updateFacility);
 router.delete("/:id", auth(User_Role.admin), FacilityController.deleteFacility);
+router.get("/", FacilityController.getAllFacility);
 
 export const FacilityRoutes = router;
