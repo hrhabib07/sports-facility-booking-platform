@@ -1,6 +1,6 @@
-import { TErrorSource, TGenericResponse } from "../interface/error";
+import { TErrorSources, TGenericErrorResponse } from "../interface/error";
 
-const handleDuplicateError = (error: any): TGenericResponse => {
+const handleDuplicateError = (error: any): TGenericErrorResponse => {
   // Extract value within double quotes using regex
   const match = error.message.match(/"([^"]*)"/);
 
@@ -8,7 +8,7 @@ const handleDuplicateError = (error: any): TGenericResponse => {
   const extractedMessage = match && match[1];
 
   const statusCode = 400;
-  const errorSources: TErrorSource = [
+  const errorSources: TErrorSources = [
     {
       path: "",
       message: `${extractedMessage} is already exists`,
