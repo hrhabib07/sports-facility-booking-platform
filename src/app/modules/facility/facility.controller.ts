@@ -12,7 +12,18 @@ const crateFacility = catchAsync(async (req, res, next) => {
         data: result
     })
 });
+const updateFacility = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const result = await FacilityServices.updateFacilityFromDB(id, req.body);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Facility updated successfully",
+        data: result
+    })
+});
 
 export const FacilityController = {
-    crateFacility
+    crateFacility,
+    updateFacility
 } 
