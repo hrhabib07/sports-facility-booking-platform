@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const createBookingValidationSchema = z.object({
     body: z.object({
-        date: z.date({
+        date: z.string({
             required_error: "Date is required"
         }),
         startTime: z.string({
