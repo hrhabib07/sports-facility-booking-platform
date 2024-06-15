@@ -25,6 +25,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send(a);
 });
 
+
+
 app.use(globalErrorHandler)
 app.use(notFound)
 

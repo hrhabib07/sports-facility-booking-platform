@@ -6,6 +6,7 @@ import { User_Role } from "../users/userConstant";
 const router = Router();
 router.post("/bookings", auth(User_Role.user), BookingController.createdBooking);
 router.get("/bookings", auth(User_Role.admin), BookingController.getAllBookings);
+router.delete("/bookings/:id", auth(User_Role.user), BookingController.deleteUsersBooking);
 router.get("/bookings/user", auth(User_Role.user), BookingController.getUsersBookings);
 router.get("/check-availability", BookingController.getAvailableSlots);
 

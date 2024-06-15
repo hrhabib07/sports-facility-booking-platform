@@ -3,9 +3,7 @@ import AppError from "../../errors/appError";
 import { isBooked } from "./booking.constant";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
-import { JwtPayload } from "jsonwebtoken";
-import jwt from "jsonwebtoken"
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
 
 const crateBookingIntoDB = async (payload: TBooking, userId: Types.ObjectId | undefined) => {
     const isBookingExist = await Booking.findOne({
@@ -41,20 +39,24 @@ const getAvailableSlotsFromDB = async (date: string) => {
         throw new AppError(httpStatus.BAD_REQUEST, 'Invalid date format. Use YYYY-MM-DD.');
     };
 
-    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed }).select("startTime endTime -_id");
+    const result = await Booking.find({ date: parsedDate, isBooked: isBooked.unconfirmed || isBooked.canceled }).select("startTime endTime -_id");
 
     return result;
 };
 
 const getAllBookingsFromDB = async () => {
 
-    const result = await Booking.find().populate("user");
+    const result = await Booking.find().populate("user").populate("facility");
     return result
 
 
 }
 const getUserBookingsFromDB = async (id: Types.ObjectId) => {
-    const result = await Booking.find({ user: id });
+    const result = await Booking.find({ user: id }).populate("user").populate("facility");
+    return result
+}
+const deleteUserBookingsFromDB = async (bookingId: string) => {
+    const result = await Booking.findOneAndUpdate({ _id: bookingId }, { isBooked: isBooked.canceled }, { new: true });
     return result
 }
 
@@ -62,5 +64,6 @@ export const BookingServices = {
     crateBookingIntoDB,
     getAvailableSlotsFromDB,
     getAllBookingsFromDB,
-    getUserBookingsFromDB
+    getUserBookingsFromDB,
+    deleteUserBookingsFromDB
 }

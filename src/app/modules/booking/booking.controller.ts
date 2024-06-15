@@ -53,11 +53,22 @@ const getUsersBookings = catchAsync(async (req, res, next) => {
         data: result
     })
 });
+const deleteUsersBooking = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const result = await BookingServices.deleteUserBookingsFromDB(id);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Bookings retrieved successfully",
+        data: result
+    })
+});
 
 
 export const BookingController = {
     createdBooking,
     getAvailableSlots,
     getAllBookings,
-    getUsersBookings
+    getUsersBookings,
+    deleteUsersBooking
 }
