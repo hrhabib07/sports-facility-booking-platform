@@ -1,69 +1,70 @@
-import { Request, Response } from "express";
+import { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
-import { TErrorSource } from "../interface/error";
-import handleZodError from "../errors/handleZodError";
-import handleValidationError from "../errors/handleValidationError";
-import handleDuplicateError from "../errors/handleDuplicateError";
-import AppError from "../errors/appError";
-import handleCastError from "../errors/castError";
 import config from "../config";
+import handleDuplicateError from "../errors/handleDuplicateError";
+import handleValidationError from "../errors/handleValidationError";
+import handleZodError from "../errors/handleZodError";
+import handleCastError from "../errors/castError";
+import { TErrorSources } from "../interface/error";
+import AppError from "../errors/appError";
 
-const globalErrorHandler = (error: any, req: Request, res: Response) => {
+const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  //setting default values
   let statusCode = 500;
-  let message = "something went wrong";
-
-  let errorSource: TErrorSource = [
+  let message = "Something went wrong!";
+  let errorSources: TErrorSources = [
     {
       path: "",
-      message: "something went wrong",
+      message: "Something went wrong",
     },
   ];
 
-  if (error instanceof ZodError) {
-    const simplifiedError = handleZodError(error);
-    statusCode = simplifiedError.statusCode;
-    message = simplifiedError.message;
-    errorSource = simplifiedError.errorSources;
-  } else if (error.name === "ValidationError") {
-    const simplifiedError = handleValidationError(error);
-    statusCode = simplifiedError.statusCode;
-    message = simplifiedError.message;
-    errorSource = simplifiedError.errorSources;
-  } else if (error.name === "CastError") {
-    const simplifiedError = handleCastError(error);
-    statusCode = simplifiedError.statusCode;
-    message = simplifiedError.message;
-    errorSource = simplifiedError.errorSources;
-  } else if (error.code === 11000) {
-    const simplifiedError = handleDuplicateError(error);
-    statusCode = simplifiedError.statusCode;
-    message = simplifiedError.message;
-    errorSource = simplifiedError.errorSources;
-  } else if (error instanceof AppError) {
-    statusCode = error?.statusCode;
-    message = error?.message;
-    errorSource = [
+  if (err instanceof ZodError) {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "ValidationError") {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "CastError") {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
+    message = err.message;
+    errorSources = [
       {
         path: "",
-        message: error.message,
+        message: err?.message,
       },
     ];
-  } else if (error instanceof Error) {
-    message = error?.message;
-    errorSource = [
+  } else if (err instanceof Error) {
+    message = err.message;
+    errorSources = [
       {
         path: "",
-        message: error.message,
+        message: err?.message,
       },
     ];
   }
 
+  //ultimate return
   return res.status(statusCode).json({
     success: false,
     message,
-    errorSource,
-    error,
-    stack: config.node_env === "development" ? error.stack : null,
+    errorSources,
+    err,
+    stack: config.node_env === "development" ? err?.stack : null,
   });
 };
 

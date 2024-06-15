@@ -4,7 +4,7 @@ import sendResponse from "../../utils/sendResponse";
 import { AuthServices } from "./auth.services";
 import config from "../../config";
 
-const signInUser = catchAsync(async (req, res) => {
+const signInUser = catchAsync(async (req, res, next) => {
   const result = await AuthServices.signInUserIntoDB(req.body);
   sendResponse(res, {
     success: true,
