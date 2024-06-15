@@ -63,7 +63,22 @@ const getUserBookingsFromDB = async (id: Types.ObjectId) => {
     .populate("facility");
   return result;
 };
-const deleteUserBookingsFromDB = async (bookingId: string) => {
+const deleteUserBookingsFromDB = async (
+  bookingId: string,
+  userId: Types.ObjectId,
+) => {
+  // Fetch bookings by userId
+  const userBookings = await Booking.find({ user: userId }).select("_id user");
+  // console.log(userBookings);
+
+  // Check if bookingId exists in userBookings
+  const bookingExists = userBookings.some((booking) =>
+    booking._id.equals(bookingId),
+  );
+
+  if (!bookingExists) {
+    throw new Error("Booking not found or does not belong to the user");
+  }
   const result = await Booking.findOneAndUpdate(
     { _id: bookingId },
     { isBooked: isBooked.canceled },

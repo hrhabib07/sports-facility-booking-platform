@@ -51,7 +51,12 @@ const getUsersBookings = catchAsync(async (req, res) => {
 });
 const deleteUsersBooking = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await BookingServices.deleteUserBookingsFromDB(id);
+  const userId = await getUserId(req.headers.authorization as string);
+
+  const result = await BookingServices.deleteUserBookingsFromDB(
+    id,
+    userId as Types.ObjectId,
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
