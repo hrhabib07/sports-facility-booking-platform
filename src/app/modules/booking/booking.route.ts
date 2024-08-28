@@ -10,22 +10,32 @@ router.post(
   "/bookings",
   auth(User_Role.user),
   validateRequest(BookingValidation.createBookingValidationSchema),
-  BookingController.createdBooking,
+  BookingController.createdBooking
 );
 router.get(
   "/bookings",
   auth(User_Role.admin),
-  BookingController.getAllBookings,
+  BookingController.getAllBookings
 );
 router.delete(
   "/bookings/:id",
   auth(User_Role.user),
-  BookingController.deleteUsersBooking,
+  BookingController.deleteUsersBooking
+);
+router.delete(
+  "/bookings/admin/:id",
+  auth(User_Role.admin),
+  BookingController.deleteSingleBooking
 );
 router.get(
   "/bookings/user",
   auth(User_Role.user),
-  BookingController.getUsersBookings,
+  BookingController.getUsersBookings
+);
+router.get(
+  "/bookings/:id",
+  auth(User_Role.admin),
+  BookingController.getSingleBooking
 );
 router.get("/check-availability", BookingController.getAvailableSlots);
 

@@ -41,10 +41,22 @@ const getAllFacility = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getSingleFacility = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  // const result = await FacilityServices.deleteFacilityFromDB(id);
+  const result = await FacilityServices.getSingleFacilityFromDB(id);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Facility has been retrieved successfully",
+    data: result,
+  });
+});
 
 export const FacilityController = {
   crateFacility,
   updateFacility,
   deleteFacility,
   getAllFacility,
+  getSingleFacility,
 };

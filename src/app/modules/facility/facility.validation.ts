@@ -11,6 +11,10 @@ const createFacilityValidationSchema = z.object({
     pricePerHour: z
       .number({ required_error: "Price per hour is required" })
       .positive("Price per hour must be a positive number"),
+
+    img: z
+      .string({ required_error: "Image is required" })
+      .nonempty("Image cannot be empty"),
     location: z
       .string({ required_error: "Location is required" })
       .nonempty("Location cannot be empty"),
@@ -24,6 +28,9 @@ const updateFacilityValidationSchema = z.object({
       .string({ required_error: "Name is required" })
       .nonempty("Name cannot be empty")
       .optional(),
+    img: z
+      .string({ required_error: "Image is required" })
+      .nonempty("Image cannot be empty"),
     description: z
       .string({ required_error: "Description is required" })
       .nonempty("Description cannot be empty")

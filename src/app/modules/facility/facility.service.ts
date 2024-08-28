@@ -9,7 +9,7 @@ const createFacilityIntoDB = async (payload: TFacility) => {
 };
 const updateFacilityFromDB = async (
   id: string,
-  payload: Partial<TFacility>,
+  payload: Partial<TFacility>
 ) => {
   const deletedFacility = await Facility.findById(id);
   if (deletedFacility?.isDeleted) {
@@ -22,12 +22,16 @@ const deleteFacilityFromDB = async (id: string) => {
   const result = await Facility.findByIdAndUpdate(
     id,
     { isDeleted: true },
-    { new: true },
+    { new: true }
   );
   return result;
 };
 const getAllFacilityFromDB = async () => {
   const result = await Facility.find();
+  return result;
+};
+const getSingleFacilityFromDB = async (id: string) => {
+  const result = await Facility.findById(id);
   return result;
 };
 
@@ -36,4 +40,5 @@ export const FacilityServices = {
   updateFacilityFromDB,
   deleteFacilityFromDB,
   getAllFacilityFromDB,
+  getSingleFacilityFromDB,
 };

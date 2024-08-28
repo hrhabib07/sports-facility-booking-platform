@@ -10,15 +10,16 @@ router.post(
   "/",
   validateRequest(FacilityValidations.createFacilityValidationSchema),
   auth(User_Role.admin),
-  FacilityController.crateFacility,
+  FacilityController.crateFacility
 );
 router.put(
   "/:id",
   validateRequest(FacilityValidations.updateFacilityValidationSchema),
   auth(User_Role.admin),
-  FacilityController.updateFacility,
+  FacilityController.updateFacility
 );
 router.delete("/:id", auth(User_Role.admin), FacilityController.deleteFacility);
 router.get("/", FacilityController.getAllFacility);
+router.get("/:id", FacilityController.getSingleFacility);
 
 export const FacilityRoutes = router;
