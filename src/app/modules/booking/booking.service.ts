@@ -4,6 +4,8 @@ import { isBooked } from "./booking.constant";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
 import { Types } from "mongoose";
+import { initiatePayment } from "../payment/payment.utils";
+import { User } from "../users/user.model";
 
 const crateBookingIntoDB = async (
   payload: TBooking,
@@ -50,9 +52,23 @@ const crateBookingIntoDB = async (
   payload.isBooked ? payload.isBooked : (payload.isBooked = isBooked.confirmed);
   payload.payableAmount = difference * 500;
   payload.user = userId;
+  const user = await User.findById(payload.user);
 
-  const result = await Booking.create(payload);
-  return result;
+  const transactionId = `TRX-${Date.now()}`;
+  // console.log(transactionId);
+  const paymentData = {
+    transactionId: transactionId,
+    totalPrice: payload.payableAmount,
+    customerPhone: user?.phone,
+    customerName: user?.name,
+    customerEmail: user?.email,
+    customerAddress: user?.address,
+  };
+
+  // const result = await Booking.create(payload);
+  const paymentSession = await initiatePayment(paymentData);
+  // console.log(paymentSession);
+  return paymentSession;
 };
 
 const getAvailableSlotsFromDB = async (date: string, facility: string) => {
