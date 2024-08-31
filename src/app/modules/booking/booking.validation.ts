@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { paymentStatus } from "./booking.constant";
 
 const createBookingValidationSchema = z.object({
   body: z.object({
@@ -11,7 +12,7 @@ const createBookingValidationSchema = z.object({
       })
       .regex(
         /^([0-1]\d|2[0-3]):([0-5]\d)$/,
-        "Start time must be in the format HH:mm",
+        "Start time must be in the format HH:mm"
       ),
     endTime: z
       .string({
@@ -19,8 +20,10 @@ const createBookingValidationSchema = z.object({
       })
       .regex(
         /^([0-1]\d|2[0-3]):([0-5]\d)$/,
-        "End time must be in the format HH:mm",
+        "End time must be in the format HH:mm"
       ),
+    transactionId: z.string(),
+    paymentStatus: z.nativeEnum(paymentStatus),
     facility: z
       .string({
         required_error: "Facility ID is required",

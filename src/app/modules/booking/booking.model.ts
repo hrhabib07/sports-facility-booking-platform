@@ -8,6 +8,12 @@ const bookingSchema = new Schema<TBooking>({
   user: { type: Schema.Types.ObjectId, ref: "User" },
   facility: { type: Schema.Types.ObjectId, ref: "Facility", required: true },
   payableAmount: { type: Number, required: true },
+  transactionId: { type: String, required: true },
+  paymentStatus: {
+    type: String,
+    enum: ["pending", "success", "fail"],
+    required: true,
+  },
   isBooked: {
     type: String,
     enum: ["confirmed", "unconfirmed", "canceled"],

@@ -1,11 +1,12 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/appError";
-import { isBooked } from "./booking.constant";
+import { isBooked, paymentStatus } from "./booking.constant";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
 import { Types } from "mongoose";
 import { initiatePayment } from "../payment/payment.utils";
 import { User } from "../users/user.model";
+import { Facility } from "../facility/facility.model";
 
 const crateBookingIntoDB = async (
   payload: TBooking,
@@ -31,7 +32,9 @@ const crateBookingIntoDB = async (
     startTime: payload.startTime,
     endTime: payload.endTime,
     isBooked: isBooked.confirmed,
+    facility: payload.facility,
   });
+  // console.log(isBookingExist);
 
   if (isBookingExist) {
     throw new AppError(
@@ -55,6 +58,11 @@ const crateBookingIntoDB = async (
   const user = await User.findById(payload.user);
 
   const transactionId = `TRX-${Date.now()}`;
+  payload.transactionId = transactionId;
+  payload.paymentStatus = "pending";
+  // const bookingData = { ...payload, transactionId, paymentStatus: "pending" };
+  console.log("payload", payload);
+  // console.log(bookingData);
   // console.log(transactionId);
   const paymentData = {
     transactionId: transactionId,
@@ -65,10 +73,13 @@ const crateBookingIntoDB = async (
     customerAddress: user?.address,
   };
 
-  // const result = await Booking.create(payload);
+  const result = await Booking.create(payload);
+  // console.log("result", result);
   const paymentSession = await initiatePayment(paymentData);
   // console.log(paymentSession);
-  return paymentSession;
+  const resultWithPayment = { ...result, ...paymentSession };
+  return resultWithPayment;
+  // return paymentSession;
 };
 
 const getAvailableSlotsFromDB = async (date: string, facility: string) => {
