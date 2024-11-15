@@ -17,8 +17,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5000",
   "https://sport-booking-facility-fronted-cooz8jvuo.vercel.app",
-  "https://sport-booking-facility-fronted.vercel.app", // Add this if it’s the correct frontend URL
-  "null",
+  "https://sport-booking-facility-fronted.vercel.app",
+  "https://sports-facility-booking-platform-rho.vercel.app",
 ];
 
 const corsOptions = {
@@ -26,21 +26,33 @@ const corsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) => {
+    console.log(`Request Origin: ${origin}`); // Log origin for debugging
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.error(`Blocked by CORS: ${origin}`);
+      console.error(`Blocked by CORS: ${origin}`); // Log blocked origins for troubleshooting
       callback(new Error("Not allowed by CORS"));
     }
   },
-  // origin: "*", // Allow all origins temporarily
-  credentials: true, // Allow credentials (cookies, tokens) to be sent with requests
-  optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
 
+// Use CORS middleware with configured options
 app.use(cors(corsOptions));
 
+// Preflight OPTIONS handling for all routes
 app.options("*", cors(corsOptions));
+
+app.use((req: Request, res: Response, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Application routes
 app.use("/api/auth", AuthRoutes);
@@ -52,6 +64,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("hello world");
 });
 
+// Error handlers
 app.use(globalErrorHandler);
 app.use(notFound);
 

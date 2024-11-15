@@ -6,13 +6,17 @@
       "use": "@vercel/node"
     }
   ],
-
   "routes": [
     {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
+      "dest": "dist/server.js"
+    },
+    {
+      "src": "/api/payment/confirmation",
+      "methods": ["OPTIONS"],
       "dest": "dist/server.js"
     }
   ]
