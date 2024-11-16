@@ -4,7 +4,7 @@ import { isBooked, paymentStatus } from "./booking.constant";
 import { TBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
 import { Types } from "mongoose";
-import { initiatePayment } from "../payment/payment.utils";
+// import { initiatePayment } from "../payment/payment.utils";
 import { User } from "../users/user.model";
 import { Facility } from "../facility/facility.model";
 
@@ -75,7 +75,7 @@ const crateBookingIntoDB = async (
   };
 
   const result = await Booking.create(payload);
-  const paymentSession = await initiatePayment(paymentData);
+  // const paymentSession = await initiatePayment(paymentData);
   const resultWithPayment = { ...result, ...paymentSession };
   return resultWithPayment;
 };
