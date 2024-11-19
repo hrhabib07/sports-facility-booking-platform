@@ -77,7 +77,8 @@ const crateBookingIntoDB = async (
   const result = await Booking.create(payload);
   // const paymentSession = await initiatePayment(paymentData);
   // const resultWithPayment = { ...result, ...paymentSession };
-  return result;
+  // return result;
+  console.log(result);
   // here the stripe will be added
 };
 

@@ -5,7 +5,7 @@ import notFound from "./app/middlewares/notFound";
 import { AuthRoutes } from "./app/modules/auth/auth.route";
 import { FacilityRoutes } from "./app/modules/facility/facility.route";
 import { BookingRoutes } from "./app/modules/booking/booking.route";
-import { PaymentRoute } from "./app/modules/payment/payment.route";
+// import { PaymentRoute } from "./app/modules/payment/payment.route";
 
 const app: Application = express();
 
@@ -58,7 +58,7 @@ app.use((req: Request, res: Response, next) => {
 app.use("/api/auth", AuthRoutes);
 app.use("/api/facility", FacilityRoutes);
 app.use("/api/", BookingRoutes);
-app.use("/api/payment", PaymentRoute);
+// app.use("/api/payment", PaymentRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("hello world");
