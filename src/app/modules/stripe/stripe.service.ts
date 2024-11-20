@@ -63,3 +63,7 @@ const createPaymentSession = async (price: number, userEmail: string) => {
 export const StripeService = {
   createPaymentSession,
 };
+
+function addDays(currentDate: Date, arg1: number): any {
+  throw new Error("Function not implemented.");
+}
