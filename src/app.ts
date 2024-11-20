@@ -26,7 +26,7 @@ const corsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) => {
-    console.log(`Request Origin: ${origin}`); // Log origin for debugging
+    // console.log(`Request Origin: ${origin}`); // Log origin for debugging
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {

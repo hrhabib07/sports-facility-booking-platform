@@ -21,12 +21,17 @@ const crateBookingIntoDB = async (
   payload: TBooking,
   userId: Types.ObjectId | undefined
 ) => {
+  // if there is a past date selected then return error
   const selectedDate = payload.date;
+
+  // If date is not provided, use today's date in YYYY-MM-DD format
   const currentDate = new Date();
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
+  // Convert parsedDate and currentDate to Date objects for comparison
   const bookingDate = new Date(selectedDate);
   const todayDate = new Date(formattedCurrentDate);
 
+  // Compare the provided date with today's date
   if (bookingDate < todayDate) {
     throw new AppError(httpStatus.BAD_REQUEST, "You cannot book a past date.");
   }
@@ -36,7 +41,6 @@ const crateBookingIntoDB = async (
     startTime: payload.startTime,
     endTime: payload.endTime,
     isBooked: isBooked.confirmed,
-    facility: payload.facility,
   });
 
   if (isBookingExist) {
@@ -52,34 +56,15 @@ const crateBookingIntoDB = async (
   if (difference > 1) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      "You can't book more than 1 hour in a single booking"
+      "You can't book more than 1 hours in a single booking"
     );
   }
   payload.isBooked ? payload.isBooked : (payload.isBooked = isBooked.confirmed);
   payload.payableAmount = difference * 500;
   payload.user = userId;
 
-  const user = await User.findById(payload.user);
-
-  const transactionId = `TRX-${Date.now()}`;
-  payload.transactionId = transactionId;
-  payload.paymentStatus = "pending";
-
-  const paymentData: PaymentData = {
-    transactionId: transactionId,
-    totalPrice: payload.payableAmount,
-    customerPhone: user?.phone || "", // Default to an empty string if undefined
-    customerName: user?.name || "", // Default to an empty string if undefined
-    customerEmail: user?.email || "", // Default to an empty string if undefined
-    customerAddress: user?.address || "", // Default to an empty string if undefined
-  };
-
   const result = await Booking.create(payload);
-  // const paymentSession = await initiatePayment(paymentData);
-  // const resultWithPayment = { ...result, ...paymentSession };
-  // return result;
-  console.log(result);
-  // here the stripe will be added
+  return result;
 };
 
 const getAvailableSlotsFromDB = async (date: string, facility: string) => {
